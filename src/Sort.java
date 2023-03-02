@@ -1,5 +1,6 @@
 public class Sort {
-    public static void main(String[] args) {
+
+
         class Sortlist
         {
             // idx1 = 작은 바꿀 배열 idx2 큰수의 바꿀 배열
@@ -28,7 +29,8 @@ public class Sort {
                     for(int j=i+1; j<arr.length; j++){
                         //다음인덱스가 현재 보다 작으면 변수에 스왑의 큰인덱스에 j(다음인덱스)를넣는다
                         if(arr[j]<arr[minIdx]){
-                            minIdx=j;                        }
+                            minIdx=j;
+                        }
                     }
                     swap(arr,i,minIdx);
                 }
@@ -67,23 +69,120 @@ public class Sort {
                 }
             }
 
-            public void SortByMergeSort(int[] arr){
-                int[] tmpArr= new int [arr.length];
+            //병합정렬
+            //배열을 /2로 나뉜뒤 해당 배열끼리 서로 비교하여 정렬한 뒤 정렬이 끝나면 분할된 배열을 합병한다
+            //tmpArr 임시저장 배열
+            //arr 정렬할 배열
+            //left 시작할 인덱스
+            //right 마지막 인덱스
+            // nlogn
+            public static void sortByMergeSort(int[] arr) {
+                int[] tmpArr = new int[arr.length];
+                mergeSort(arr, tmpArr, 0, arr.length - 1);
             }
-            public void mergeSort(int[] arr,int[] tmpArr, int left, int right){
-                if(left<right){
-                    int m = left+(right -left)/2;
-                    mergeSort(arr,tmpArr,left,m);
-                    mergeSort(arr,tmpArr,m+1,right);
-
+            public static void mergeSort(int[] arr, int[] tmpArr, int left, int right) {
+                if (left < right) {
+                    int m = left + (right - left) / 2;
+                    mergeSort(arr, tmpArr, left, m); // 분할한 첫번째 배열 정렬
+                    mergeSort(arr, tmpArr, m + 1, right); // 분할한 두번째 배열 정렬
+                    merge(arr, tmpArr, left, m, right); //분할한 양 배열을 합병
                 }
             }
-            public void merge(int[]arr,int[]tmpArr, int left,int mid, int right){
-                for(int i =left; i<=right; i++){
-                    tmpArr
+            public static void merge(int[] arr, int[] tmpArr, int left, int mid, int right) {
+                 for (int i = left; i <= right; i++) {
+                    tmpArr[i] = arr[i]; // 임시 배열인 tmpArr에 배열 개수 할당
+                }
+                int part1 = left;
+                int part2 = mid + 1;
+                int index = left;
+                while (part1 <= mid && part2 <= right) { // 각각의 분할한 배열의 끝까지 반복
+                    if (tmpArr[part1] <= tmpArr[part2]) { //분할된 배열의 첫번째 자리들부터 서로비교 첫번째배열이 더 작으면
+                        arr[index] = tmpArr[part1];      //더작은수를 진짜 배열에 순서대로할당
+                        part1++;                         //인덱스 증가
+                    } else {
+                        arr[index] = tmpArr[part2];      //두번째 배열이 더 작으면 해당 값을 저장
+                        part2++;                         //두번째배열 인덱스 증가
+                    }
+                    index++;                             //진짜 배열의 인덱스 증가
+                }
+                for (int i = 0; i <= mid - part1; i++) {  // 배열의 처음부터 끝까지 차례대로 할당 하는 로직
+                    arr[index + i] = tmpArr[part1 + i];
+                }
+            }
+            //힙정렬
+            //오름차순 정렬일때 최대힙을 사용하는 정렬
+            //
+            public void SortByheap(int[] arr){
+                for(int i=arr.length/2-1; i<arr.length;i++){
+                    heapify(arr,i,arr.length-1);
+                }
+                for(int i = arr.length-1;i>=0;i--){
+                    swap(arr,0,i);
+                    heapify(arr,0,i-1);
+                }
+            }
+            public void heapify(int[] arr, int parentIdx,int lastIdx){
+                int leftChildIdx;
+                int rightChildIdx;
+                int largestIdx;
+
+                while(parentIdx*2+1<=lastIdx){
+                    leftChildIdx = (parentIdx*2)+1;
+                    rightChildIdx=(parentIdx*2)+2;
+                    largestIdx = parentIdx;
+
+                    if(arr[leftChildIdx]>arr[largestIdx]){
+                        largestIdx=leftChildIdx;
+                    }
+
+                    if(rightChildIdx<=lastIdx&&arr[rightChildIdx]>arr[largestIdx]){
+                        largestIdx = rightChildIdx;
+                    }
+
+                    if(largestIdx!=parentIdx){
+                        swap(arr,parentIdx,largestIdx);
+                        parentIdx=largestIdx;
+                    }else
+                    {
+                        break;
+                    }
                 }
             }
 
+            public void sortByQuickSort(int[] arr){
+                quickSort(arr,0,arr.length-1);
+            }
+            public void quickSort(int[]arr ,int start,int last)
+            {
+                int part = partition(arr,start,last);
+                if(start <part-1){
+                    quickSort(arr,start,part-1);
+                }
+                if(part<last){
+                    quickSort(arr,part,last);
+                }
+            }
+
+            public int partition(int[]arr,int start,int last){
+                int pivot = arr[(start+last)/2]; //첫번째 인덱스와 마지막인덱스의 중간값
+                while (start<=last)
+                {
+                    while(arr[start]<pivot) //start인덱스의 값이 피벗보다 작으면 조건성립이므로 인덱스를 추가해 포인터 이동
+                    {
+                        start++;
+                    }
+                    while (arr[last]>pivot) //last인덱스의 값이 피벗보다 크면 true므로 포인터 이동
+                    {
+                        last--;
+                    }
+                    if(start<=last){//포인터끼리 서로 곂치지 않는다면 스왑
+                        start++;
+                        last--;
+                        swap(arr,start,last);
+                    }
+                }
+                return start;
+            }
         }
     }
-}
+

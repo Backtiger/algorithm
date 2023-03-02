@@ -3,6 +3,8 @@ import javax.sound.midi.Soundbank;
 public class test {
     public static void main(String[] args) {
         Main.Solution.solution("123");
+        int[] a = {4,16,5,3,1};
+        Sort.Sortlist.sortByMergeSort(a);
 
 
 
